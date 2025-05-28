@@ -1,0 +1,39 @@
+import random
+import nltk
+from nltk.util import bigrams
+from nltk.tokenize import word_tokenize
+from collections import defaultdict
+
+# Sample text corpus
+text = """
+Alice was beginning to get very tired of sitting by her sister on the bank,
+and of having nothing to do. Once or twice she had peeped into the book her
+sister was reading, but it had no pictures or conversations in it.
+"""
+
+# Download tokenizer data
+nltk.download('punkt')
+
+# Tokenize text
+tokens = word_tokenize(text)
+
+# Build bigram model
+model = defaultdict(list)
+for w1, w2 in bigrams(tokens):
+    model[w1].append(w2)
+
+# Generate text using the bigram model
+def generate_text(start_word, num_words=20):
+    word = start_word
+    result = [word]
+    for _ in range(num_words - 1):
+        next_words = model.get(word)
+        if not next_words:
+            break
+        word = random.choice(next_words)
+        result.append(word)
+    return ' '.join(result)
+
+# Generate and print text
+print("Generated Text:\n")
+print(generate_text('Alice', 20))
