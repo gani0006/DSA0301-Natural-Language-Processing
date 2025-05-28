@@ -1,0 +1,53 @@
+# Define a simple CFG as a dictionary:
+# Non-terminal -> list of possible expansions (each expansion is a list of symbols)
+grammar = {
+    'S': [['NP', 'VP']],
+    'NP': [['Det', 'N']],
+    'VP': [['V', 'NP']],
+    'Det': [['the'], ['a']],
+    'N': [['dog'], ['cat']],
+    'V': [['chases'], ['sees']]
+}
+
+def parse(symbol, tokens, pos=0):
+    """
+    Attempt to parse tokens starting at position pos using symbol.
+    Returns list of positions after parsing if successful, else empty list.
+    """
+
+    # If symbol is a terminal (not in grammar), match directly
+    if symbol not in grammar:
+        if pos < len(tokens) and tokens[pos] == symbol:
+            return [pos + 1]
+        else:
+            return []
+
+    # Symbol is non-terminal, try each production
+    positions = []
+    for production in grammar[symbol]:
+        # Start parsing this production from current position
+        current_positions = [pos]
+        for sym in production:
+            next_positions = []
+            for cp in current_positions:
+                results = parse(sym, tokens, cp)
+                next_positions.extend(results)
+            current_positions = next_positions
+            if not current_positions:
+                break  # fail early for this production
+        positions.extend(current_positions)
+
+    return positions
+
+# Example usage:
+
+sentence = "the dog chases a cat"
+tokens = sentence.split()
+
+# Parse from start symbol 'S'
+results = parse('S', tokens)
+
+if any(pos == len(tokens) for pos in results):
+    print("Sentence is accepted by the grammar.")
+else:
+    print("Sentence is rejected by the grammar.")
