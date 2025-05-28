@@ -1,0 +1,85 @@
+from collections import defaultdict, deque
+
+class EarleyParser:
+    def __init__(self, grammar, start_symbol):
+        """
+        grammar: dict of form {NonTerminal: [list of productions]}
+        Each production is a list of symbols (str)
+        start_symbol: the start symbol of the grammar
+        """
+        self.grammar = grammar
+        self.start = start_symbol
+
+    def parse(self, tokens):
+        # Number of tokens
+        n = len(tokens)
+        # Chart: list of sets of states, one set per position 0..n
+        chart = [set() for _ in range(n+1)]
+
+        # Each state is a tuple: (lhs, rhs, dot, start_pos)
+        # lhs = left-hand side non-terminal
+        # rhs = right-hand side list of symbols
+        # dot = position of dot in rhs (0 means before first symbol)
+        # start_pos = where this state started in tokens
+
+        # Initialize with start state
+        start_state = (self.start, self.grammar[self.start][0], 0, 0)
+        chart[0].add(start_state)
+
+        for i in range(n+1):
+            # Using a queue to process states as they get added
+            queue = deque(chart[i])
+            while queue:
+                state = queue.popleft()
+                lhs, rhs, dot, start_pos = state
+
+                # If dot is not at end, try to predict or scan
+                if dot < len(rhs):
+                    next_sym = rhs[dot]
+                    if next_sym in self.grammar:
+                        # Predictor: add states for productions of next_sym
+                        for prod in self.grammar[next_sym]:
+                            new_state = (next_sym, prod, 0, i)
+                            if new_state not in chart[i]:
+                                chart[i].add(new_state)
+                                queue.append(new_state)
+                    else:
+                        # Scanner: if next_sym matches current token, add state at next position
+                        if i < n and tokens[i] == next_sym:
+                            new_state = (lhs, rhs, dot+1, start_pos)
+                            if new_state not in chart[i+1]:
+                                chart[i+1].add(new_state)
+                else:
+                    # Completer: find states that were waiting for this completed non-terminal
+                    for st in chart[start_pos]:
+                        slhs, srhs, sdot, sstart = st
+                        if sdot < len(srhs) and srhs[sdot] == lhs:
+                            new_state = (slhs, srhs, sdot+1, sstart)
+                            if new_state not in chart[i]:
+                                chart[i].add(new_state)
+                                queue.append(new_state)
+
+        # Check if completed parse exists
+        final_state = (self.start, self.grammar[self.start][0], len(self.grammar[self.start][0]), 0)
+        return final_state in chart[n]
+
+# Example usage:
+
+grammar = {
+    'S': [['NP', 'VP']],
+    'NP': [['Det', 'N']],
+    'VP': [['V', 'NP']],
+    'Det': [['the'], ['a']],
+    'N': [['dog'], ['cat']],
+    'V': [['chases'], ['sees']]
+}
+
+parser = EarleyParser(grammar, 'S')
+
+sentence = "the dog chases a cat"
+tokens = sentence.split()
+
+if parser.parse(tokens):
+    print("Sentence is accepted by the grammar.")
+else:
+    print("Sentence is rejected by the grammar.")
