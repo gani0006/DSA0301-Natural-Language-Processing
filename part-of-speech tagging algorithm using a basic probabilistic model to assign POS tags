@@ -1,0 +1,44 @@
+import nltk
+from nltk.corpus import treebank
+from nltk import word_tokenize
+from collections import defaultdict, Counter
+
+# Download required NLTK data
+nltk.download('punkt')
+nltk.download('treebank')
+
+# Prepare training data from the Treebank corpus
+train_data = treebank.tagged_sents()
+
+# Compute frequency counts for word->tag
+word_tag_counts = defaultdict(Counter)
+tag_counts = Counter()
+
+for sentence in train_data:
+    for word, tag in sentence:
+        word_tag_counts[word.lower()][tag] += 1
+        tag_counts[tag] += 1
+
+# Function to assign most probable tag based on MLE
+def pos_tag_mle(sentence):
+    tokens = word_tokenize(sentence)
+    tagged = []
+    for word in tokens:
+        lower_word = word.lower()
+        if lower_word in word_tag_counts:
+            # Choose tag with highest probability
+            tag = word_tag_counts[lower_word].most_common(1)[0][0]
+        else:
+            # Assign a default tag (e.g., noun 'NN') for unknown words
+            tag = 'NN'
+        tagged.append((word, tag))
+    return tagged
+
+# Test the tagger
+text = "The quick brown fox jumps over the lazy dog"
+tagged_output = pos_tag_mle(text)
+
+# Print results
+print("Stochastic POS Tagging Results:")
+for word, tag in tagged_output:
+    print(f"{word} -> {tag}")
