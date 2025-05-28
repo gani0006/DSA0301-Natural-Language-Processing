@@ -1,0 +1,21 @@
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk import pos_tag
+
+# Download necessary NLTK data files (only once)
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
+# Sample text
+text = "Alice was reading a book under the old oak tree."
+
+# Tokenize the text
+tokens = word_tokenize(text)
+
+# Perform POS tagging
+tagged = pos_tag(tokens)
+
+# Print the tagged tokens
+print("Part-of-Speech Tagging Results:")
+for word, tag in tagged:
+    print(f"{word} -> {tag}")
