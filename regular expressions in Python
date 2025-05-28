@@ -1,0 +1,26 @@
+import re
+
+text = """
+Alice was beginning to get very tired of sitting by her sister on the bank,
+and of having nothing to do. Once or twice she had peeped into the book her
+sister was reading, but it had no pictures or conversations in it.
+"""
+
+match = re.search(r'\bsister\b', text)
+if match:
+    print("Found 'sister' at position:", match.start())
+else:
+    print("'sister' not found")
+
+capital_words = re.findall(r'\b[A-Z][a-z]*\b', text)
+print("Capitalized words:", capital_words)
+
+new_text = re.sub(r'\bsister\b', 'brother', text)
+print("\nModified text:\n", new_text)
+
+sentences = re.findall(r'[^.?!]*[.?!]', text)
+print("\nSentences found:")
+for s in sentences:
+    print("-", s.strip())
+five_letter_words = re.findall(r'\b\w{5}\b', text)
+print("\nFive-letter words:", five_letter_words)
