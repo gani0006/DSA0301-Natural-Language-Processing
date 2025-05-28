@@ -1,0 +1,50 @@
+import nltk
+from nltk.tokenize import word_tokenize
+
+# Sample sentence
+sentence = "I can fish with the fishing rod"
+
+# Tokenize sentence
+tokens = word_tokenize(sentence)
+
+# Initial naive tagger: tag all words as nouns (NN)
+tags = ['NN'] * len(tokens)
+
+# Simple dictionary of correct tags for some words (for demo)
+known_tags = {
+    'I': 'PRP',
+    'can': 'MD',
+    'fish': 'NN',  # ambiguous: noun or verb
+    'with': 'IN',
+    'the': 'DT',
+    'fishing': 'VBG',
+    'rod': 'NN'
+}
+
+# Assign known tags where available
+for i, word in enumerate(tokens):
+    if word in known_tags:
+        tags[i] = known_tags[word]
+
+# Define transformation rules as functions:
+# Each rule checks a condition and updates a tag if condition met
+
+def rule_verb_after_modal(words, tags):
+    # If the previous word is modal (MD), tag current word as verb (VB)
+    for i in range(1, len(words)):
+        if tags[i-1] == 'MD' and tags[i] == 'NN':
+            tags[i] = 'VB'
+
+def rule_noun_after_determiner(words, tags):
+    # If previous word is determiner (DT) and current tag is NN, keep NN
+    # Just a placeholder rule to show chaining; no change here
+    pass
+
+# Apply transformation rules iteratively
+rule_verb_after_modal(tokens, tags)
+rule_noun_after_determiner(tokens, tags)
+
+# Print final tagged sentence
+print("Transformation-Based Tagging Results:")
+for word, tag in zip(tokens, tags):
+    print(f"{word} -> {tag}")
