@@ -1,0 +1,29 @@
+def pluralize_fsm(noun):
+    """
+    Finite-State Machine to generate plural forms of regular English nouns.
+    Rules:
+    - If a noun ends with 's', 'sh', 'ch', 'x', or 'z' → add 'es'
+    - If a noun ends with 'y' preceded by a consonant → replace 'y' with 'ies'
+    - Otherwise → add 's'
+    """
+
+    vowels = 'aeiou'
+    
+    # State 0: Check special endings
+    if noun.endswith(('s', 'sh', 'ch', 'x', 'z')):
+        plural = noun + 'es'
+
+    # State 1: Check for consonant + 'y'
+    elif noun.endswith('y') and noun[-2] not in vowels:
+        plural = noun[:-1] + 'ies'
+
+    # State 2: Regular case
+    else:
+        plural = noun + 's'
+
+    return plural
+
+# Test examples
+nouns = ['cat', 'bus', 'church', 'box', 'buzz', 'baby', 'toy', 'boy', 'knife', 'leaf']
+for noun in nouns:
+    print(f"{noun} → {pluralize_fsm(noun)}")
