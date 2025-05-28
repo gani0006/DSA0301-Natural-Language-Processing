@@ -1,0 +1,33 @@
+import nltk
+from nltk import CFG
+from nltk.parse import ChartParser
+
+# Download NLTK data (if needed)
+nltk.download('punkt')
+
+# Define a simple CFG grammar
+grammar = CFG.fromstring("""
+  S -> NP VP
+  NP -> Det N
+  VP -> V NP
+  Det -> 'the' | 'a'
+  N -> 'dog' | 'cat'
+  V -> 'chases' | 'sees'
+""")
+
+# Create a parser
+parser = ChartParser(grammar)
+
+# Sentence to parse
+sentence = "the dog chases a cat"
+tokens = nltk.word_tokenize(sentence)
+
+# Parse and generate trees
+trees = list(parser.parse(tokens))
+
+if trees:
+    for tree in trees:
+        print(tree)
+        tree.pretty_print()  # Display tree in console (requires console with proper support)
+else:
+    print("No parse tree found for the sentence.")
