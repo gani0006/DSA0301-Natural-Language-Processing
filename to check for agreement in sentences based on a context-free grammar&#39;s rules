@@ -1,0 +1,42 @@
+def is_singular(word):
+    return word in ['he', 'she', 'it', 'dog', 'cat', 'boy', 'girl']
+
+def is_plural(word):
+    return word in ['they', 'we', 'dogs', 'cats', 'boys', 'girls']
+
+def is_singular_verb(verb):
+    return verb in ['runs', 'chases', 'eats']
+
+def is_plural_verb(verb):
+    return verb in ['run', 'chase', 'eat']
+
+def check_agreement(subject, verb):
+    if is_singular(subject) and is_singular_verb(verb):
+        return True
+    elif is_plural(subject) and is_plural_verb(verb):
+        return True
+    else:
+        return False
+
+# Sentence examples to test
+sentences = [
+    "he runs",
+    "they run",
+    "dog chases",
+    "dogs chase",
+    "she eat",     # wrong
+    "we chases"    # wrong
+]
+
+# Check agreement for each sentence
+print("Subject-Verb Agreement Checker:\n")
+for sentence in sentences:
+    tokens = sentence.split()
+    if len(tokens) != 2:
+        print(f"Skipping malformed sentence: {sentence}")
+        continue
+    subject, verb = tokens
+    if check_agreement(subject, verb):
+        print(f"✅ '{sentence}' – Agreement OK")
+    else:
+        print(f"❌ '{sentence}' – Agreement Error")
