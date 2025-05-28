@@ -1,0 +1,31 @@
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+
+# Download necessary NLTK data files (only once)
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
+# Sample text
+text = "The children were playing in the gardens and had been running happily."
+
+# Tokenize the text
+tokens = word_tokenize(text)
+print("Tokens:", tokens)
+
+# Initialize stemmer and lemmatizer
+stemmer = PorterStemmer()
+lemmatizer = WordNetLemmatizer()
+
+# Perform stemming
+stems = [stemmer.stem(token) for token in tokens]
+print("\nStemming Results:")
+for original, stemmed in zip(tokens, stems):
+    print(f"{original} -> {stemmed}")
+
+# Perform lemmatization
+lemmas = [lemmatizer.lemmatize(token) for token in tokens]
+print("\nLemmatization Results:")
+for original, lemma in zip(tokens, lemmas):
+    print(f"{original} -> {lemma}")
